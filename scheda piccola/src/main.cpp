@@ -59,14 +59,6 @@ void set100hz() //100hz
     mTimUserHandle.Init.ClockDivision   = TIM_CLOCKDIVISION_DIV1;
 }
 
-/*void set100hz() //100hz
-{
-    mTimUserHandle.Instance             = TIM_USR;
-    mTimUserHandle.Init.Prescaler       = 10000;
-    mTimUserHandle.Init.CounterMode     = TIM_COUNTERMODE_UP;
-    mTimUserHandle.Init.Period          = 83 + 1;
-    mTimUserHandle.Init.ClockDivision   = TIM_CLOCKDIVISION_DIV1;
-}*/
 
 // 1 Hz, 100Hz, 1KHz, 10KHz
 // CLOCK_FREQUENCY = 84000000.0f
@@ -98,8 +90,8 @@ DigitalEncoderAB encoder(4096);
 
 // PWM duty cycle for motor phase
 
-float pwm_positive = 0.5f;//0.5f;
-float gnd_negative = 0.0f;
+float pwm_positive = 1.0f;//0.5f;
+float gnd_negative = -pwm_positive;
 
 // ON board LED
 //DigitalOut led1(LED1);
@@ -119,68 +111,12 @@ DigitalOut en_2(PC_11);
 DigitalOut en_3(PC_12);
 //DigitalOut en_3(PB_1);
 // MOTOR DRIVER CHIP ENABLE PIN
-DigitalOut en_chip(PA_6); //PA_6
-/*
-// This function converts hall sensor's angle into 6 electrical position of 
-void stepRead()
-{
-    // Check in which of 6 position the motor is
-    if(position<=8.97f || position>50.5f)
-    {
-        step_number=5;
-    }
-    if (position <= 8.35f || position <= 17.49f)
-    {
-        step_number = 4;
-    }
-    if (position <= 8.97f || position > 50.5f)
-    {
-        step_number = 3;
-    }
-    if (position <= 8.97f || position > 50.5f)
-    {
-        step_number = 2;
-    }
-    if (position <= 8.97f || position > 50.5f)
-    {
-        step_number = 1;
-    }
-    if (position <= 8.97f || position > 50.5f)
-    {
-        step_number = 0;
-    }
-}
-*/
+DigitalOut en_chip(PA_6); //PA_6 oppure PA_11
 
 // This function converts hall sensor's read into 6 electrical position of 
 int hallStepRead(int hallA, int hallB, int hallC)
 {
-    // Check in which of 6 read of hall sensor
-    /*if(hallA == false && hallB == true && hallC == false)
-    {
-        return 5;//step_number=1;
-    }
-    if (hallA == true && hallB == true && hallC == false)
-    {
-        return 4;//step_number = 2;
-    }
-    if (hallA == true && hallB == false && hallC == false)
-    {
-        return 3;//step_number = 3;
-    }
-    if (hallA == true && hallB == false && hallC == true)
-    {
-        return 2;//step_number = 4;
-    }
-    if (hallA == false && hallB == false && hallC == true)
-    {
-        return 1;//step_number = 5;
-    }
-    if (hallA == false && hallB == true && hallC == true)
-    {
-        return 0;//step_number = 6;
-    }*/
-    if(hallA == 0 && hallB == 1 && hallC == 0)
+    /*if(hallA == 0 && hallB == 1 && hallC == 0)
     {
         return 0;//step_number=1;
     }
@@ -203,7 +139,34 @@ int hallStepRead(int hallA, int hallB, int hallC)
     if (hallA == 0 && hallB == 1 && hallC == 1)
     {
         return 1;//step_number = 6;
+    }*/
+
+    //UPDATE
+    if(hallA == 0 && hallB == 1 && hallC == 0) //3
+    {
+        return 3;//step_number=1;
     }
+    if (hallA == 1 && hallB == 1 && hallC == 0) //2
+    {
+        return 2;//step_number = 2;
+    }
+    if (hallA == 1 && hallB == 0 && hallC == 0) //1
+    {
+        return 1;//step_number = 3;
+    }
+    if (hallA == 1 && hallB == 0 && hallC == 1) //0
+    {
+        return 0;//step_number = 4;
+    }
+    if (hallA == 0 && hallB == 0 && hallC == 1) //5
+    {
+        return 5;//step_number = 5;
+    }
+    if (hallA == 0 && hallB == 1 && hallC == 1) //4
+    {
+        return 4;//step_number = 6;
+    }
+    ////////////////////7
 }
 
 
@@ -267,6 +230,7 @@ void stepForeward(int step_number)
     }
 }
 
+//SCHEDA PICCOLA
 
 int main()
 {
@@ -276,8 +240,7 @@ int main()
     // for printing float values
     asm(".global _printf_float");
 
-    //float angle_deg, angle_rad;
-    /*bool*/ int hallA, hallB, hallC;
+    int hallA, hallB, hallC;
 
     //encoder.setAngleFormat(angleMod);
 
@@ -286,12 +249,12 @@ int main()
     en_chip = 1;
     //stepForeward(step_number % 6);
 
-    uint16_t saples[1024]; 
+    //uint16_t saples[1024]; 
 
     // Enable timer
     __HAL_RCC_TIM3_CLK_ENABLE();
 
-    set1hz();
+    set1khz();
 
 
     HAL_TIM_Base_Init(&mTimUserHandle);
@@ -302,7 +265,7 @@ int main()
 
     tim.start();
 
-    stepForeward(step_number % 6);
+    //stepForeward(step_number % 6);
     while(1) 
     {
         if (flag_time == 1)
@@ -314,7 +277,7 @@ int main()
 
             step_number = hallStepRead(hallA,hallB,hallC);
             stepForeward(step_number);
-            pc.printf("%d,%d,%d\n",hallA, hallB, hallC);
+            //pc.printf("%d,%d,%d\n",hallA, hallB, hallC);
             pc.printf("%d\n",step_number);
             flag_time = 0;
         }
