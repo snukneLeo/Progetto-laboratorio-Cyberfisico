@@ -6,7 +6,7 @@
 #define TIM_USR         TIM3
 #define TIM_USR_IRQ     TIM3_IRQn
 
-Timer tim;
+Timer tim; //definizione di timer
 //potenziometro
 AnalogIn input(PA_4); //scheda piccola --> PB_1 //scheda grossa --> PA_4
 
@@ -22,6 +22,8 @@ void M_TIM_USR_HANDLER() {
         flag_time = 1;
     }
 }
+
+//metodi per impostare il timer software
 
 void set1khz() //1khz
 {
@@ -85,7 +87,7 @@ DigitalIn mybutton(USER_BUTTON);
 //DigitalEncoderAS5601 encoder(PB_9, PB_8);
 
 //AB encoder (PA0 = A, PA1 = B)
-DigitalEncoderAB encoder(4096);
+//DigitalEncoderAB encoder(4096);
 
 // PWM duty cycle for motor phase
 
@@ -112,9 +114,10 @@ DigitalOut en_3(PB_1);
 // MOTOR DRIVER CHIP ENABLE PIN
 DigitalOut en_chip(PA_6); //PA_6
 
-// This function converts hall sensor's read into 6 electrical position of 
+// This function converts hall sensor's read into 6 electrical position 
 int hallStepRead(int hallA, int hallB, int hallC)
 {
+    //Questa è la migliore configurazione per il 6-step
     // Check in which of 6 read of hall sensor
     if(hallA == 0 && hallB == 1 && hallC == 0) //3
     {
@@ -140,10 +143,10 @@ int hallStepRead(int hallA, int hallB, int hallC)
     {
         return 4;//step_number = 6;
     }
-}
+} 
 
-
-void stepForeward(int step_number)
+//6-step in base agli enable e al pwm
+void stepForaward(int step_number)
 {
     switch(step_number){
         case 0: 
@@ -203,21 +206,21 @@ void stepForeward(int step_number)
     }
 }
 
-
 int main()
 {
+    //periodo in milli e non in micro
     uh_1.period(0.0001f);
     vh_2.period(0.0001f);
     wh_3.period(0.0001f);
     // for printing float values
     asm(".global _printf_float");
 
-    int hallA, hallB, hallC;
+    int hallA, hallB, hallC; //variabili lette
 
-    int step_number = 0;
+    int step_number = 0; //in base agli hall eseguo lo step
     en_chip = 1;
 
-    uint16_t saples[1024]; 
+    //uint16_t saples[1024]; 
 
     // Enable timer
     __HAL_RCC_TIM3_CLK_ENABLE();
@@ -230,23 +233,24 @@ int main()
     NVIC_SetVector(TIM_USR_IRQ, (uint32_t)M_TIM_USR_HANDLER);
     NVIC_EnableIRQ(TIM_USR_IRQ);
 
-    tim.start();
+    tim.start(); //attio il timer software
     
     while(1) 
     {
-        
-        if (flag_time == 1)
+        if (flag_time == 1) //variabile settata nel metodo del timer
         {
-            pwm_positive = input.read(); 
+            pwm_positive = input.read(); //imposto il pwm con il potenziometro
+            //lettura degli hall
             hallA = readA.read();
             hallB = readB.read();
             hallC = readC.read();
 
+            //eseguo lo step in base agli hall
             step_number = hallStepRead(hallA,hallB,hallC);
-            stepForeward(step_number);
+            stepForaward(step_number);
             //pc.printf("%d,%d,%d\n",hallA, hallB, hallC);
-            pc.printf("%d\n",step_number);
-            flag_time = 0;
+            //pc.printf("%d\n",step_number);
+            flag_time = 0; //scandisce l'evoluzione del timer
         }
     }
 }
