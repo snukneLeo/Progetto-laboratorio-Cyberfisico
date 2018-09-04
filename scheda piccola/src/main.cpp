@@ -144,7 +144,7 @@ int hallStepRead(int hallA, int hallB, int hallC)
 }
 
 //6-step in base agli enable e al pwm
-void stepForeward(int step_number)
+void stepForaward(int step_number)
 {
     switch(step_number){
         case 0: 
@@ -248,7 +248,7 @@ int main()
 
             //imposto lo step in base agli hall
             step_number = hallStepRead(hallA,hallB,hallC);
-            stepForeward(step_number);
+            stepForaward(step_number);
             //pc.printf("%d,%d,%d\n",hallA, hallB, hallC);
             //pc.printf("%d\n",step_number);
             flag_time = 0;
