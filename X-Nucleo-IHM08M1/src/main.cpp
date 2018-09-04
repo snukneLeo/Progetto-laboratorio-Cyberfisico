@@ -119,27 +119,27 @@ int hallStepRead(int hallA, int hallB, int hallC)
 {
     //Questa è la migliore configurazione per il 6-step
     // Check in which of 6 read of hall sensor
-    if(hallA == 0 && hallB == 1 && hallC == 0) //3
+    if(hallA == 0 && hallB == 1 && hallC == 0) //3      --> piccola --> 0
     {
         return 3;//step_number=1;
     }
-    if (hallA == 1 && hallB == 1 && hallC == 0) //2
+    if (hallA == 1 && hallB == 1 && hallC == 0) //2     --> 5
     {
         return 2;//step_number = 2;
     }
-    if (hallA == 1 && hallB == 0 && hallC == 0) //1
+    if (hallA == 1 && hallB == 0 && hallC == 0) //1     --> 4
     {
         return 1;//step_number = 3;
     }
-    if (hallA == 1 && hallB == 0 && hallC == 1) //0
+    if (hallA == 1 && hallB == 0 && hallC == 1) //0     --> 3
     {
         return 0;//step_number = 4;
     }
-    if (hallA == 0 && hallB == 0 && hallC == 1) //5
+    if (hallA == 0 && hallB == 0 && hallC == 1) //5     --> 2
     {
         return 5;//step_number = 5;
     }
-    if (hallA == 0 && hallB == 1 && hallC == 1) //4
+    if (hallA == 0 && hallB == 1 && hallC == 1) //4     --> 1
     {
         return 4;//step_number = 6;
     }
@@ -233,7 +233,7 @@ int main()
     NVIC_SetVector(TIM_USR_IRQ, (uint32_t)M_TIM_USR_HANDLER);
     NVIC_EnableIRQ(TIM_USR_IRQ);
 
-    tim.start(); //attio il timer software
+    tim.start(); //attivo il timer software
     
     while(1) 
     {
