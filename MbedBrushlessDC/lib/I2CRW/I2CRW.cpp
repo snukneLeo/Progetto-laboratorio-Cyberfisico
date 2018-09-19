@@ -8,7 +8,7 @@
  */
 I2CRW::I2CRW(int device_address, PinName sda, PinName scl) : I2C(sda, scl) {
     this->device_address = device_address;
-    this->frequency(1000000);
+    this->frequency(300000);
 }
 
 /**

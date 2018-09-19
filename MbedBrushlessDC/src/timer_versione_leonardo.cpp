@@ -22,7 +22,7 @@ char step_number = 0;
 // Angle value scaled by electrical poles
 float position = 0;
 // PWM duty cycle for motor phase
-float pwm_positive = 0.3f;
+float pwm_positive = 1.0f;
 float gnd_negative = 0.0f;
 // Phase 1 PWM OUT
 PwmOut uh_1(PA_8);
@@ -105,27 +105,27 @@ void stepRead()
   // Check in which of 6 position the motor is
   if (position <= 8.97f || position > 50.5f)
   {
-    step_number = 5;
+    step_number = 5; //5
   }
   else if (position > 8.35f && position <= 17.49f)
   {
-    step_number = 4;
+    step_number = 0; //4
   }
   else if (position > 16.87f && position <= 26.11f)
   {
-    step_number = 3;
+    step_number = 1; //3
   }
   else if (position > 25.49f && position <= 34.81f)
   {
-    step_number = 2;
+    step_number = 2; //2
   }
   else if (position > 33.84f && position <= 43.2f)
   {
-    step_number = 1;
+    step_number = 3; //1
   }
   if ((position > 42.47f && position < 53.0f) || position <= 0.87f)
   {
-    step_number = 0;
+    step_number = 4; //0
   }
 }
 
@@ -145,7 +145,7 @@ void step_forward()
   // For each step we have one phase with positive voltage PWM, one phase connected to ground and one phase disconnected
   switch (step_number)
   {
-  case 0:
+  case 3:
     uh_1.write(pwm_positive); //PWM
     vh_2.write(0.0f);         //DISCONNECTED
     wh_3.write(gnd_negative); //GND
@@ -154,7 +154,7 @@ void step_forward()
     en_3 = 1;                 //GND
     break;
 
-  case 1:
+  case 2:
     uh_1.write(0.0f);         //DISCONNECTED
     vh_2.write(pwm_positive); //PWM
     wh_3.write(gnd_negative); //GND
@@ -163,7 +163,7 @@ void step_forward()
     en_3 = 1;                 //GND
     break;
 
-  case 2:
+  case 1:
     uh_1.write(gnd_negative); //GND
     vh_2.write(pwm_positive); //PWM
     wh_3.write(0.0f);         //DISCONNECTED
@@ -172,7 +172,7 @@ void step_forward()
     en_3 = 0;                 //DISCONNECTED
     break;
 
-  case 3:
+  case 0:
     uh_1.write(gnd_negative); //GND
     vh_2.write(0.0f);         //DISCONNECTED
     wh_3.write(pwm_positive); //PWM
@@ -181,7 +181,7 @@ void step_forward()
     en_3 = 1;                 //PWM
     break;
 
-  case 4:
+  case 5:
     uh_1.write(0.0f);         //DISCONNECTED
     vh_2.write(gnd_negative); //GND
     wh_3.write(pwm_positive); //PWM
@@ -190,7 +190,7 @@ void step_forward()
     en_3 = 1;                 //PWM
     break;
 
-  case 5:
+  case 4:
     uh_1.write(pwm_positive); //PWM
     vh_2.write(gnd_negative); //GND
     wh_3.write(0.0f);         //DISCONNECTED
@@ -261,14 +261,17 @@ int main()
 
       // Read position from hall sensor's angle divided by electrical poles
       position = fmod(angle, 51.43f); //360/7, where 7 is number of magnets divided by 2
+      //pc.printf("%f\n",position);
 
       // Read the potentiometer value and set the duty cycle
       read_potentiometer();
 
       // Checks step value and eventually runs motor
       step_forward();
+      //pc.printf("%i\n",step_number);
       //pc.printf("%f\n",position);
       t2=t.read_us();
+      
 
       /*if((t2-t1)>897) //f401re --> 897/898 f446re --> 851
         led1=1;
