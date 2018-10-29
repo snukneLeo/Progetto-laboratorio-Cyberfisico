@@ -1,0 +1,6 @@
+{
+    "terminal.integrated.env.linux": {
+        "PATH": "/home/snukne/.platformio/penv/bin:/home/snukne/.platformio/penv:/home/snukne/bin:/home/snukne/.local/bin:/opt/ros/kinetic/bin:/home/snukne/bin:/home/snukne/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "PLATFORMIO_CALLER": "vscode"
+    }
+}
