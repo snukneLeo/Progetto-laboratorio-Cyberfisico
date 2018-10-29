@@ -210,16 +210,16 @@ void stepForaward(int step_number)
 
 int main()
 {
-    //periodo in milli e non in micro
+    //period pwm
     uh_1.period(0.00001f);
     vh_2.period(0.00001f);
     wh_3.period(0.00001f);
     // for printing float values
     asm(".global _printf_float");
 
-    int hallA, hallB, hallC; //variabili lette
+    int hallA, hallB, hallC;
 
-    int step_number = 0; //in base agli hall eseguo lo step
+    int step_number = 0;
     //en_chip = 1;
 
     while(en_chip == 0)
@@ -241,24 +241,23 @@ int main()
     NVIC_SetVector(TIM_USR_IRQ, (uint32_t)M_TIM_USR_HANDLER);
     NVIC_EnableIRQ(TIM_USR_IRQ);
 
-    tim.start(); //attivo il timer software
+    tim.start(); //start timer
     
     while(1) 
     {
-        if (flag_time == 1) //variabile settata nel metodo del timer
+        if (flag_time == 1) //clock timer
         {
-            pwm_positive = input.read(); //imposto il pwm con il potenziometro
-            //lettura degli hall
+            pwm_positive = input.read();//set pwm from potenziometer
+            //read hall sensors
             hallA = readA.read();
             hallB = readB.read();
             hallC = readC.read();
 
-            //eseguo lo step in base agli hall
+            //set step_number from method with read hall sensors
             step_number = hallStepRead(hallA,hallB,hallC);
             stepForaward(step_number);
-            //pc.printf("%d,%d,%d\n",hallA, hallB, hallC);
-            //pc.printf("%d\n",step_number);
-            flag_time = 0; //scandisce l'evoluzione del timer
+            
+            flag_time = 0;
         }
     }
 }
